@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\ModelHasPermission;
 use App\Http\Requests\MemberCreateRequest;
 use App\Http\Requests\MemberUpdateRequest;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use Auth;
 use Session;
 use DB;
@@ -36,10 +33,7 @@ class MemberController extends Controller
     }
 
     public function create() {
-        $roles = Role::get();
-        $permissions = Permission::all();
-
-        return view('admin.member.create', compact('roles', 'permissions'));
+        return view('admin.member.create');
     }
 
     public function store(MemberCreateRequest $request) {
@@ -54,20 +48,6 @@ class MemberController extends Controller
             $user->update([
                 'code' => 'NV'.str_pad($user->id, 4, '0', STR_PAD_LEFT)
             ]);
-
-            if (isset($request['roles'])) {
-                foreach ($request['roles'] as $role) {
-                    $roleOld = Role::where('id', '=', $role)->firstOrFail();
-                    $user->assignRole($roleOld);
-                }
-            }
-            
-            if (isset($request['permissions'])) {
-                foreach ($request['permissions'] as $value) {
-                    $permissionOld = Permission::where('id', '=', $value)->first();
-                    $user->givePermissionTo($permissionOld);
-                }
-            }
             DB::commit();
             return redirect()->route('admin.member.index')->with('alert-success','Tạo thành viên thành công!');
         } catch (Exception $e) {
@@ -78,14 +58,7 @@ class MemberController extends Controller
 
     public function edit($id) {
         $user = User::findOrFail($id);
-        $roles = Role::get();
-        $permissions = Permission::all();
-        $permissionOfRole = $user->roles->load('permissions')->pluck('id')->toArray();
-        $listPermissionOfRole = [];
-        foreach ($permissionOfRole as $value) {
-            $listPermissionOfRole = Role::find($value)->permissions->pluck('id')->toArray();
-        }
-        return view('admin.member.edit', compact('user', 'roles', 'permissions', 'listPermissionOfRole'));
+        return view('admin.member.edit', compact('user'));
     }
 
     public function update(MemberUpdateRequest $request, $id) {
@@ -93,22 +66,6 @@ class MemberController extends Controller
             $user = User::findOrFail($id);
             $input = $request->only(['name', 'email']);
             $data = $request->all();
-            $roles = $request['roles'];
-            $user->syncRoles($roles); 
-            if(isset($data['roles'])){
-                foreach ($data['roles'] as $value) {
-                    $role = Role::find($value);
-                    $user->assignRole($role->name);
-                }
-            }
-
-            ModelHasPermission::where("model_id", $id)->delete(); 
-            if(isset($data['permissions'])){
-                foreach ($data['permissions'] as $value) {
-                    $permission = Permission::find($value);
-                    $user->givePermissionTo($permission->name);
-                }
-            }
 
             $data = array_merge($request->all(), [
                 'password' => bcrypt($data['password'])
@@ -122,8 +79,6 @@ class MemberController extends Controller
 
     public function destroy($id) {
         $user = User::findOrFail($id);
-        $user->syncPermissions();
-        $user->syncRoles();
         $user->delete();
         return redirect()->route('admin.member.index')->with('alert-success', 'Xóa thành viên thành công!');
     }

@@ -68,24 +68,6 @@
                                     {!! $errors->first('address', '<span class="help-block error">:message</span>') !!}
                                 </div>
             
-                                <div class='form-group'>
-                                    <p class="mr-3">Vai trò</p>
-                                    <select 
-                                        name="roles[]" 
-                                        id="addRole" 
-                                        class="select2 select2Role form-control"
-                                        multiple
-                                    >
-                                    @foreach ($roles as $item)
-                                        <option 
-                                        @if (in_array($item->id, $user->roles->pluck('id')->toArray()))
-                                            selected
-                                        @endif
-                                        value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach        
-                                </select>
-                                </div>
-            
                                 <div class="form-group">
                                     <label>Mật khẩu *</label>
                                     <input type="password" name="password" class="form-control">

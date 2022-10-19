@@ -65,21 +65,6 @@
 							<input type="text" name="address" class="form-control" value="{{ old('address') }}">
 							{!! $errors->first('address', '<span class="help-block error">:message</span>') !!}
 						</div>
-
-						<div class='form-group'>
-							<p class="mr-3">Vai trò</p>
-							<select 
-								id="addRole"
-								class="select2 form-control select2Role" 
-								name="roles[]"
-								multiple="multiple"
-							>
-								@foreach ($roles as $item)
-									<option value="{{ $item->id }}">{{ $item->name }}</option>
-								@endforeach
-							</select>
-							{!! $errors->first('roles[]', '<span class="help-block error">:message</span>') !!}
-						</div>
 						<div class="form-group">
 							<label>Mật khẩu *</label>
 							<input type="password" name="password" class="form-control">

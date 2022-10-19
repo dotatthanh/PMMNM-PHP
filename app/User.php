@@ -48,10 +48,6 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function returnOrders () {
-        return $this->hasMany(ReturnOrder::class);
-    }
-
     public function getTotalSalesOrderAmountAttribute()
     {
         $first_month = date('Y-m-01 00:00:00');
@@ -102,57 +98,5 @@ class User extends Authenticatable
         }
 
         return $result->count();
-    }
-
-    public function getTotalReturnOrderAttribute()
-    {
-        $first_month = date('Y-m-01 00:00:00');
-        $end_month = date('Y-m-t 23:59:59');
-
-        $request = resolve(Request::class);
-
-        $result = $this->returnOrders
-            ->where('created_at', '>=', $first_month)
-            ->where('created_at', '<=', $end_month);
-
-        if (isset($request->from_date)) {
-            $result = $this->returnOrders->where('status', 1)->where('created_at', '>=', $request->from_date);
-        }
-
-        if (isset($request->to_date)) {
-            $result = $this->returnOrders->where('status', 1)->where('created_at', '<=', $request->to_date);
-        }
-
-        if (isset($request->from_date) && isset($request->to_date)) {
-            $result = $this->returnOrders->where('status', 1)->where('created_at', '>=', $request->from_date)->where('created_at', '<=', $request->to_date);
-        }
-
-        return $result->count();
-    }
-
-    public function getTotalReturnOrderAmountAttribute()
-    {
-        $first_month = date('Y-m-01 00:00:00');
-        $end_month = date('Y-m-t 23:59:59');
-
-        $request = resolve(Request::class);
-
-        $result = $this->returnOrders
-            ->where('created_at', '>=', $first_month)
-            ->where('created_at', '<=', $end_month);
-
-        if (isset($request->from_date)) {
-            $result = $this->returnOrders->where('status', 1)->where('created_at', '>=', $request->from_date);
-        }
-
-        if (isset($request->to_date)) {
-            $result = $this->returnOrders->where('status', 1)->where('created_at', '<=', $request->to_date);
-        }
-
-        if (isset($request->from_date) && isset($request->to_date)) {
-            $result = $this->returnOrders->where('status', 1)->where('created_at', '>=', $request->from_date)->where('created_at', '<=', $request->to_date);
-        }
-
-        return $result->sum('total_money');
     }
 }

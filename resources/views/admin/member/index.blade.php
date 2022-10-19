@@ -40,7 +40,6 @@
                     <th>Số điện thoại</th>
                     <th>Địa chỉ</th>
                     <th style="min-width: 100px">Ngày tạo</th>
-                    <th>Vai trò</th>
                     <th style="min-width: 155px">Hành đồng</th>
                 </tr>
             </thead>
@@ -58,15 +57,6 @@
                     <td>{{ $item->phone }}</td>
                     <td>{{ $item->address }}</td>
                     <td>{{ date('d/m/Y', strtotime($item->created_at)) }}</td>
-
-                    @php 
-                        $listRole = $item->roles()->pluck('name')
-                    @endphp
-                    <td>
-                        @foreach ($listRole as $value)
-                            <span class="badge badge-dark text-white">{{ $value }}</span>
-                        @endforeach
-                    </td>
                     <td>
                         <a href="{{ route('admin.member.edit', $item->id) }}" class="btn btn-warning text-white pull-left" style="margin-right: 3px;">
                             <span>Sửa</span>
